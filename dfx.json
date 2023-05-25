@@ -1,0 +1,29 @@
+{
+  "canisters": {
+    "U_Stuff_Image_Manage_backend": {
+      "main": "src/U_Stuff_Image_Manage_backend/main.mo",
+      "type": "motoko"
+    },
+    "U_Stuff_Image_Manage_frontend": {
+      "dependencies": [
+        "U_Stuff_Image_Manage_backend"
+      ],
+      "frontend": {
+        "entrypoint": "src/U_Stuff_Image_Manage_frontend/src/index.html"
+      },
+      "source": [
+        "src/U_Stuff_Image_Manage_frontend/assets",
+        "dist/U_Stuff_Image_Manage_frontend/"
+      ],
+      "type": "assets"
+    }
+  },
+  "defaults": {
+    "build": {
+      "args": "",
+      "packtool": ""
+    }
+  },
+  "output_env_file": ".env",
+  "version": 1
+}
