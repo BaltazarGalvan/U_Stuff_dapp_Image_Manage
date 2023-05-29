@@ -1,0 +1,25 @@
+type Result = 
+ variant {
+   err: text;
+   ok;
+ };
+type ImgProfile = 
+ record {
+   altText: text;
+   buttonAriaCurrent: text;
+   buttonClass: text;
+   description: text;
+   imgClass: text;
+   name: text;
+   source: text;
+ };
+type ImgCollection = 
+ service {
+   addImg: (ImgProfile) -> (Result);
+   allImages: () -> (vec ImgProfile) query;
+   deleteOne: (nat) -> (Result);
+   modImg: (nat, ImgProfile) -> (Result);
+   removeAll: () -> (Result);
+   whoami: () -> (principal) query;
+ };
+service : () -> ImgCollection
