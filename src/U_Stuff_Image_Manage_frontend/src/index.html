@@ -17,6 +17,7 @@
     <link type="text/css" rel="stylesheet" href="./main.css" />
   </head>
   <body>
+    <img class="motoko" src="./motoko.png" alt="motoko Image" />
     <main>
       <section class="login_status_container">
         <button
@@ -25,6 +26,7 @@
         <span class="text-body-secondary login_status_text"></span>
       </section>
       <section class="images_section">
+        <div class="disable_imagescontainer show_images_enabled"></div>
         <div class="images_list"></div>
         <div class="image_detail">
           <form>
@@ -45,7 +47,7 @@
             /><br />
             <label for="img_source">Source:</label><br />
             <input
-              class="form-control input_text"
+              class="form-control input_text image_source"
               type="text"
               id="img_source"
               name="fsource"
@@ -85,22 +87,24 @@
                 />
                 <label for="buttonariacurrent">Aria current?</label>
               </div>
-              <img class="actual_image" src="" alt="" />
+              <img class="actual_image image" src="" alt="" />
             </div>
           </form>
         </div>
       </section>
-      <hr />
       <div class="images_btn_control">
-        <button class="btn btn-secondary rounded-pill px-3 btn_add">Add</button
+        <button class="btn btn-secondary rounded-pill px-3 btn_new">
+          Cl-Form
+        </button>
+        <button class="btn btn-secondary rounded-pill px-3 btn_add">+</button
         ><button class="btn btn-secondary rounded-pill px-3 btn_mod">
-          Modify</button
-        ><button class="btn btn-warning rounded-pill px-3 btn_del_one">
-          Delete One</button
+          Update</button
+        ><button class="btn btn-warning rounded-pill px-3 btn_del_one">-</button
         ><button class="btn btn-danger rounded-pill px-3 btn_remove_all">
-          Remove all
+          Del All Images
         </button>
       </div>
+      <hr />
     </main>
   </body>
 </html>

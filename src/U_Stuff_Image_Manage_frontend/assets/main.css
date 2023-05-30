@@ -8,6 +8,45 @@ form {
   padding: 4px 0;
 }
 
+.disable_imagescontainer {
+  position: absolute;
+  background-color: grey;
+  width: 45%;
+  height: 600px;
+  margin-left: 1%;
+  opacity: 0.5;
+}
+
+.show_images_enabled {
+  z-index: -1;
+}
+
+.callingBackend {
+  opacity: 40%;
+}
+
+.motoko {
+  position: absolute;
+  top: -20px;
+  right: 10px;
+  height: 100px;
+}
+
+.motoko_loader {
+  animation: 1s blink infinite;
+}
+@keyframes blink {
+  25% {
+    opacity: 50%;
+  }
+  50% {
+    opacity: 100%;
+  }
+  75% {
+    opacity: 25%;
+  }
+}
+
 .images_list {
   height: 600px;
   overflow: scroll;
@@ -51,9 +90,8 @@ form {
 .images_btn_control {
   display: flex;
   justify-content: center;
-  width: 50%;
+  margin-top: 10px;
   float: right;
-  margin-right: 5%;
 }
 
 .images_btn_control > * {
@@ -66,7 +104,7 @@ form {
 }
 
 .actual_image {
-  border: 1px solid black;
-  margin-left: 100px;
-  width: 25%;
+  margin-left: 10px;
+  width: 50%;
+  object-fit: scale-down;
 }

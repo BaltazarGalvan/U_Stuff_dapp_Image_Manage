@@ -16,6 +16,7 @@ const imgAltText = document.querySelector("#img_altText");
 const imgClass = document.querySelector("#imgClass");
 const buttonClass = document.querySelector("#buttonClass");
 const buttonariacurrent = document.querySelector("#buttonariacurrent");
+const imageSource = document.querySelector(".image_source");
 
 let imageSelectedIndex = 0;
 let imagesArray = [];
@@ -40,8 +41,7 @@ const changeLogStatus = async function (isLoggued) {
     loginStatusText.textContent = "Wellcome Ic User: " + result;
     btnLogin.textContent = "Logout";
   } else {
-    loginStatusText.textContent =
-      "You're Anonimous, to manage the images you have to login with the authorized IC user";
+    loginStatusText.textContent = "Please login with an authorized IC user";
     btnLogin.textContent = "Please Login";
   }
 };
@@ -52,10 +52,13 @@ const imagesdisplay = async function (reloadPage) {
   imagesArray.forEach((imageData, index) => {
     imgToAddToHTML =
       imgToAddToHTML +
-      `<img id = "${index}" src="${imageData.source}" alt="${imageData.altText}"/>`;
+      `<img class = "image" id = "${index}" src="${imageData.source}" alt="${imageData.altText}"/>`;
   });
   imageListContainer.innerHTML = imgToAddToHTML;
-  if (reloadPage) loadActualImageInfo(imagesArray[0]);
+  if (reloadPage) {
+    imageSelectedIndex = 0;
+    loadActualImageInfo(imagesArray[imageSelectedIndex]);
+  }
 };
 
 const loadActualImageInfo = function (actualImageInfo) {
@@ -69,6 +72,64 @@ const loadActualImageInfo = function (actualImageInfo) {
   buttonariacurrent.checked =
     actualImageInfo.buttonAriaCurrent === "aria-current='true'";
 };
+
+const constructNewImage = function () {
+  return {
+    source: actualImage.src,
+    name: imgName.value,
+    description: imgDescription.value,
+    source: imgSource.value,
+    altText: imgAltText.value,
+    imgClass: imgClass.checked ? "carousel-item active" : "",
+    buttonClass: buttonClass.checked ? "active" : "",
+    buttonAriaCurrent: buttonariacurrent.checked ? "aria-current='true'" : "",
+  };
+};
+
+const confirmAction = function (question) {
+  let text = `${question}`;
+  return confirm(text);
+};
+
+const motokoLoader = function (callingBackend) {
+  if (callingBackend) {
+    document.querySelector(".motoko").classList.add("motoko_loader");
+  } else {
+    document.querySelector(".motoko").classList.remove("motoko_loader");
+  }
+};
+
+const setDisabled = function (disabled) {
+  const allBtn = document.querySelectorAll("button");
+  const allInputs = document.querySelectorAll("input");
+  const allImages = document.querySelector(".disable_imagescontainer");
+
+  if (disabled) {
+    allImages.classList.remove("show_images_enabled");
+  } else {
+    allImages.classList.add("show_images_enabled");
+  }
+
+  allBtn.forEach((ele) => {
+    if (disabled) {
+      ele.setAttribute("disabled", true);
+    } else {
+      ele.removeAttribute("disabled");
+    }
+  });
+
+  allInputs.forEach((ele) => {
+    if (disabled) {
+      ele.setAttribute("disabled", true);
+    } else {
+      ele.removeAttribute("disabled");
+    }
+  });
+};
+
+imageSource.addEventListener("keyup", () => {
+  actualImage.src = imageSource.value;
+});
 
 btnLogin.addEventListener("click", async (e) => {
   e.preventDefault();
@@ -85,25 +146,142 @@ btnLogin.addEventListener("click", async (e) => {
   }
 });
 
+imageListContainer.addEventListener("click", (e) => {
+  const clickedImage = e.target.id;
+  imageSelectedIndex = parseInt(clickedImage);
+  loadActualImageInfo(imagesArray[clickedImage]);
+});
+
 document
   .querySelector(".btn_remove_all")
   .addEventListener("click", async (e) => {
     e.preventDefault();
+
+    if (
+      !confirmAction(
+        "\nTHIS ACTION WILL ERASE ALL IMAGES RECORD!. Please Confirm"
+      )
+    )
+      return;
+
+    setDisabled(true);
+    motokoLoader(true);
+
     const imgCollectionActor = await constructActor();
-    const result = await imgCollectionActor.removeAll();
-    console.log(result);
+    const removeAllResult = await imgCollectionActor.removeAll();
+
+    if (removeAllResult.err) {
+      alert(
+        "You can't perform this action!, please login with an authorized user!"
+      );
+    } else {
+      await imagesdisplay(true);
+    }
+    setDisabled(false);
+    motokoLoader(false);
   });
 
 document.querySelector(".btn_del_one").addEventListener("click", async (e) => {
+  e.preventDefault();
+  if (
+    !confirmAction(
+      `\nTHIS ACTION WILL DELETE THE IMAGE RECORD FOR "${imagesArray[imageSelectedIndex].name}"!. Please Confirm`
+    )
+  )
+    return;
+
+  setDisabled(true);
+  motokoLoader(true);
+
   const imgCollectionActor = await constructActor();
-  const result = await imgCollectionActor.deleteOne(imageSelectedIndex);
-  console.log(result);
+  const deleteOneResult = await imgCollectionActor.deleteOne(
+    imageSelectedIndex
+  );
+
+  if (deleteOneResult.err) {
+    alert(
+      "You can't perform this action!, please login with an authorized user!"
+    );
+  } else {
+    await imagesdisplay(true);
+  }
+  setDisabled(false);
+  motokoLoader(false);
 });
 
-imageListContainer.addEventListener("click", (e) => {
-  const clickedImage = e.target.id;
-  loadActualImageInfo(imagesArray[clickedImage]);
+document.querySelector(".btn_mod").addEventListener("click", async (e) => {
+  e.preventDefault();
+
+  if (
+    !confirmAction(`\nTHIS ACTION WILL REPLACE THE IMAGE INFO!. Please Confirm`)
+  )
+    return;
+
+  setDisabled(true);
+  motokoLoader(true);
+
+  const newImageInfo = constructNewImage();
+
+  const imgCollectionActor = await constructActor();
+  const modResult = await imgCollectionActor.modImg(
+    imageSelectedIndex,
+    newImageInfo
+  );
+
+  if (modResult.err) {
+    alert(
+      "You can't perform this action!, please login with an authorized user!"
+    );
+  } else {
+    await imagesdisplay(true);
+  }
+  motokoLoader(false);
+  setDisabled(false);
 });
 
-changeLogStatus(await authClient.isAuthenticated());
-imagesdisplay(true);
+document.querySelector(".btn_add").addEventListener("click", async (e) => {
+  e.preventDefault();
+
+  if (
+    !confirmAction(
+      `\nTHIS ACTION WILL ADD THIS INFO AS A NEW RECORD!, Please confirm`
+    )
+  )
+    return;
+
+  setDisabled(true);
+  motokoLoader(true);
+  const newImageInfo = constructNewImage();
+
+  const imgCollectionActor = await constructActor();
+  const modResult = await imgCollectionActor.addImg(newImageInfo);
+
+  if (modResult.err) {
+    alert(
+      "You can't perform this action!, please login with an authorized user!"
+    );
+  } else {
+    await imagesdisplay(true);
+  }
+
+  motokoLoader(false);
+  setDisabled(false);
+});
+
+document.querySelector(".btn_new").addEventListener("click", (e) => {
+  e.preventDefault();
+  const allInputs = document.querySelectorAll("input");
+  allInputs.forEach((ele) => {
+    ele.value = "";
+  });
+  actualImage.src = "";
+});
+
+const init = async function () {
+  motokoLoader(true);
+  changeLogStatus(await authClient.isAuthenticated());
+  await imagesdisplay(true);
+  motokoLoader(false);
+};
+
+init();
