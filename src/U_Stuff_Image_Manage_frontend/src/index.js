@@ -127,7 +127,7 @@ const setDisabled = function (disabled) {
   });
 };
 
-imageSource.addEventListener("keyup", () => {
+imageSource.addEventListener("change", () => {
   actualImage.src = imageSource.value;
 });
 
